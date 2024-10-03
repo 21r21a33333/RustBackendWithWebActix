@@ -1,0 +1,69 @@
+{
+    "intervals": [
+        {
+            "assetDepth": "75521290269",
+            "assetPrice": "14783.073022878321",
+            "assetPriceUSD": "59069.78030093377",
+            "endTime": "1725339600",
+            "liquidityUnits": "351830947462230",
+            "luvi": "0.014692848081142434",
+            "membersCount": "3503",
+            "runeDepth": "1116436748828617",
+            "startTime": "1725336000",
+            "synthSupply": "66009549374",
+            "synthUnits": "273119774514654",
+            "units": "624950721976884"
+        },
+        {
+            "assetDepth": "76186012138",
+            "assetPrice": "14526.538755217698",
+            "assetPriceUSD": "59164.72029934709",
+            "endTime": "1725343200",
+            "liquidityUnits": "351830947462230",
+            "luvi": "0.014792506859673349",
+            "membersCount": "3503",
+            "runeDepth": "1106719057928143",
+            "startTime": "1725339600",
+            "synthSupply": "66009617018",
+            "synthUnits": "268915918794175",
+            "units": "620746866256405"
+        },
+        {
+            "assetDepth": "75959204832",
+            "assetPrice": "14613.780292877158",
+            "assetPriceUSD": "58757.94197068937",
+            "endTime": "1725346800",
+            "liquidityUnits": "351830818333554",
+            "luvi": "0.014758921065300024",
+            "membersCount": "3502",
+            "runeDepth": "1110051130636501",
+            "startTime": "1725343200",
+            "synthSupply": "66009699759",
+            "synthUnits": "270336345521229",
+            "units": "622167163854783"
+        }
+    ],
+    "meta": {
+        "endAssetDepth": "75959204832",
+        "endLPUnits": "351830818333554",
+        "endMemberCount": "3502",
+        "endRuneDepth": "1110051130636501",
+        "endSynthUnits": "270336345521229",
+        "endTime": "1725346800",
+        "luviIncrease": "1.0051889339909774",
+        //luviIncrease=end LUVI/start Luvi​
+        "priceShiftLoss": "0.9999780272334851",
+        //Pool Value=Asset Depth×Asset Price (in RUNE)+Rune Depth
+        //Price Shift Loss=New Value in Pool​/Old Value in Pool
+        "startAssetDepth": "75455015882",
+        //assetDepth of previous record
+        "startLPUnits": "351830947462230",
+        "startMemberCount": "3503",
+        //mem of previous record
+        "startRuneDepth": "1117400191709227",
+        //runeDepth of previous record
+        "startSynthUnits": "273545494138420",
+        //synthUnits of previous record
+        "startTime": "1725336000"
+    }
+}

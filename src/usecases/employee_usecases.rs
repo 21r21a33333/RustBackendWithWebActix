@@ -6,10 +6,12 @@ pub struct EmployeeUseCase<R: EmployeeRepository> {
 }
 
 impl<R: EmployeeRepository> EmployeeUseCase<R> {
-    pub async fn add_employee(&self, name: String, age: u32, department: String) -> Result<(), String> {
+    pub async fn add_employee(&self, name: String, age: u32, department: String) -> Result<(), Box<dyn Error> >{
         let employee = Employee::new(name, age, department)?;
 
         // Now that the employee is valid, persist to the database
-        self.repo.create_employee(employee).await.map_err(|e| e.to_string())
+        self.repo.create_employee(employee).await?
     }
 }
+
+

@@ -1,0 +1,360 @@
+{
+    "intervals": [
+        {
+            "averageSlip": "12.633771929824562",
+            "endTime": "1725339600",
+            "fromTradeAverageSlip": "15.012820512820513",
+            "fromTradeCount": "156",
+            "fromTradeFees": "13171612845",
+            "fromTradeVolume": "8781643642142",
+            "fromTradeVolumeUSD": "35085937",
+            "runePriceUSD": "3.995771394047586",
+            "startTime": "1725336000",
+            "synthMintAverageSlip": "15",
+            "synthMintCount": "1",
+            "synthMintFees": "1036279",
+            "synthMintVolume": "694744179",
+            "synthMintVolumeUSD": "2774",
+            "synthRedeemAverageSlip": "0",
+            "synthRedeemCount": "0",
+            "synthRedeemFees": "0",
+            "synthRedeemVolume": "0",
+            "synthRedeemVolumeUSD": "0",
+            "toAssetAverageSlip": "15",
+            "toAssetCount": "85",
+            "toAssetFees": "5637456072",
+            "toAssetVolume": "3760024837767",
+            "toAssetVolumeUSD": "15017615",
+            "toRuneAverageSlip": "15.108910891089108",
+            "toRuneCount": "101",
+            "toRuneFees": "5726489966",
+            "toRuneVolume": "3769287597774",
+            "toRuneVolumeUSD": "15054618",
+            "toTradeAverageSlip": "5.336283185840708",
+            "toTradeCount": "113",
+            "toTradeFees": "2918992140",
+            "toTradeVolume": "5759620786951",
+            "toTradeVolumeUSD": "23000190",
+            "totalCount": "456",
+            "totalFees": "27455587302",
+            "totalVolume": "22071271608813",
+            "totalVolumeUSD": "88161134"
+        },
+        {
+            "averageSlip": "13.371891891891892",
+            "endTime": "1725343200",
+            "fromTradeAverageSlip": "15.276041666666666",
+            "fromTradeCount": "384",
+            "fromTradeFees": "54169798749",
+            "fromTradeVolume": "35120221886182",
+            "fromTradeVolumeUSD": "141936884",
+            "runePriceUSD": "4.072871128925745",
+            "startTime": "1725339600",
+            "synthMintAverageSlip": "15",
+            "synthMintCount": "9",
+            "synthMintFees": "166663612",
+            "synthMintVolume": "111142843338",
+            "synthMintVolumeUSD": "448136",
+            "synthRedeemAverageSlip": "16.2",
+            "synthRedeemCount": "10",
+            "synthRedeemFees": "185270582",
+            "synthRedeemVolume": "114168879320",
+            "synthRedeemVolumeUSD": "460420",
+            "toAssetAverageSlip": "15",
+            "toAssetCount": "142",
+            "toAssetFees": "14015357227",
+            "toAssetVolume": "9347063591933",
+            "toAssetVolumeUSD": "37867989",
+            "toRuneAverageSlip": "15.014285714285714",
+            "toRuneCount": "210",
+            "toRuneFees": "14216755649",
+            "toRuneVolume": "9467448246660",
+            "toRuneVolumeUSD": "38344748",
+            "toTradeAverageSlip": "5.429411764705883",
+            "toTradeCount": "170",
+            "toTradeFees": "6269363664",
+            "toTradeVolume": "12019976509777",
+            "toTradeVolumeUSD": "48591770",
+            "totalCount": "925",
+            "totalFees": "89023209483",
+            "totalVolume": "66180021957210",
+            "totalVolumeUSD": "267649947"
+        }
+    ],
+    "meta": {
+        "averageSlip": "13.128167994207097",
+        "endTime": "1725343200",
+        "fromTradeAverageSlip": "15.2",
+        "fromTradeCount": "540",
+        "fromTradeFees": "67341411594",
+        "fromTradeVolume": "43901865528324",
+        "fromTradeVolumeUSD": "177022821",
+        "runePriceUSD": "4.072871128925745",
+        "startTime": "1725336000",
+        "synthMintAverageSlip": "15",
+        "synthMintCount": "10",
+        "synthMintFees": "167699891",
+        "synthMintVolume": "111837587517",
+        "synthMintVolumeUSD": "450910",
+        "synthRedeemAverageSlip": "16.2",
+        "synthRedeemCount": "10",
+        "synthRedeemFees": "185270582",
+        "synthRedeemVolume": "114168879320",
+        "synthRedeemVolumeUSD": "460420",
+        "toAssetAverageSlip": "15",
+        "toAssetCount": "227",
+        "toAssetFees": "19652813299",
+        "toAssetVolume": "13107088429700",
+        "toAssetVolumeUSD": "52885604",
+        "toRuneAverageSlip": "15.045016077170418",
+        "toRuneCount": "311",
+        "toRuneFees": "19943245615",
+        "toRuneVolume": "13236735844434",
+        "toRuneVolumeUSD": "53399366",
+        "toTradeAverageSlip": "5.392226148409894",
+        "toTradeCount": "283",
+        "toTradeFees": "9188355804",
+        "toTradeVolume": "17779597296728",
+        "toTradeVolumeUSD": "71591960",
+        "totalCount": "1381",
+        "totalFees": "116478796785",
+        "totalVolume": "88251293566023",
+        "totalVolumeUSD": "355811081"
+    }
+}
+/*
+In this case, the `meta` data is calculated by aggregating the corresponding fields from all `intervals`. Here's how each `meta` field is derived from the `intervals`:
+
+1. **averageSlip**:
+   - The weighted average is used based on the `totalCount` in each interval.
+   - Formula: 
+     \[
+     \text{averageSlip
+    } = \frac{(\text{averageSlip
+        }_1 \times \text{totalCount
+        }_1) + (\text{averageSlip
+        }_2 \times \text{totalCount
+        }_2)
+    }{\text{totalCount
+        }_1 + \text{totalCount
+        }_2
+    }
+     \
+]
+     \[
+     \text{averageSlip
+    } = \frac{(12.633771929824562 \times 456) + (13.371891891891892 \times 925)
+    }{
+        456 + 925
+    } = 13.128167994207097
+     \
+]
+
+2. **fromTradeAverageSlip**:
+   - The weighted average based on `fromTradeCount`.
+   - Formula:
+     \[
+     \text{fromTradeAverageSlip
+    } = \frac{(\text{fromTradeAverageSlip
+        }_1 \times \text{fromTradeCount
+        }_1) + (\text{fromTradeAverageSlip
+        }_2 \times \text{fromTradeCount
+        }_2)
+    }{\text{fromTradeCount
+        }_1 + \text{fromTradeCount
+        }_2
+    }
+     \
+]
+     \[
+     \text{fromTradeAverageSlip
+    } = \frac{(15.012820512820513 \times 156) + (15.276041666666666 \times 384)
+    }{
+        156 + 384
+    } = 15.2
+     \
+]
+
+3. **fromTradeCount**:
+   - This is the sum of `fromTradeCount` from each interval.
+   - `156 + 384 = 540`.
+
+4. **fromTradeFees**:
+   - This is the sum of `fromTradeFees` from each interval.
+   - `13171612845 + 54169798749 = 67341411594`.
+
+5. **fromTradeVolume**:
+   - This is the sum of `fromTradeVolume` from each interval.
+   - `8781643642142 + 35120221886182 = 43901865528324`.
+
+6. **fromTradeVolumeUSD**:
+   - This is the sum of `fromTradeVolumeUSD` from each interval.
+   - `35085937 + 141936884 = 177022821`.
+
+7. **runePriceUSD**:
+   - Since `runePriceUSD` is constant across intervals, the `meta` value is the last interval's value: `4.072871128925745`.
+
+8. **synthMintAverageSlip**:
+   - SynthMintAverageSlip is constant across intervals, so it remains `15`.
+
+9. **synthMintCount**:
+   - This is the sum of `synthMintCount` from each interval.
+   - `1 + 9 = 10`.
+
+10. **synthMintFees**:
+    - This is the sum of `synthMintFees` from each interval.
+    - `1036279 + 166663612 = 167699891`.
+
+11. **synthMintVolume**:
+    - This is the sum of `synthMintVolume` from each interval.
+    - `694744179 + 111142843338 = 111837587517`.
+
+12. **synthMintVolumeUSD**:
+    - This is the sum of `synthMintVolumeUSD` from each interval.
+    - `2774 + 448136 = 450910`.
+
+13. **synthRedeemAverageSlip**:
+    - Since `synthRedeemAverageSlip` is `0` in the first interval and `16.2` in the second, the value for `meta` is the non-zero value: `16.2`.
+
+14. **synthRedeemCount**:
+    - This is the sum of `synthRedeemCount` from each interval.
+    - `0 + 10 = 10`.
+
+15. **synthRedeemFees**:
+    - This is the sum of `synthRedeemFees` from the second interval (since it's zero in the first).
+    - `0 + 185270582 = 185270582`.
+
+16. **synthRedeemVolume**:
+    - This is the sum of `synthRedeemVolume` from the second interval (since it's zero in the first).
+    - `0 + 114168879320 = 114168879320`.
+
+17. **synthRedeemVolumeUSD**:
+    - This is the sum of `synthRedeemVolumeUSD` from the second interval (since it's zero in the first).
+    - `0 + 460420 = 460420`.
+
+18. **toAssetAverageSlip**:
+    - The weighted average based on `toAssetCount`.
+    - Formula:
+      \[
+      \text{toAssetAverageSlip
+    } = \frac{(\text{toAssetAverageSlip
+        }_1 \times \text{toAssetCount
+        }_1) + (\text{toAssetAverageSlip
+        }_2 \times \text{toAssetCount
+        }_2)
+    }{\text{toAssetCount
+        }_1 + \text{toAssetCount
+        }_2
+    }
+      \
+]
+      Since `toAssetAverageSlip` is constant at `15`, it remains `15`.
+
+19. **toAssetCount**:
+    - This is the sum of `toAssetCount` from each interval.
+    - `85 + 142 = 227`.
+
+20. **toAssetFees**:
+    - This is the sum of `toAssetFees` from each interval.
+    - `5637456072 + 14015357227 = 19652813299`.
+
+21. **toAssetVolume**:
+    - This is the sum of `toAssetVolume` from each interval.
+    - `3760024837767 + 9347063591933 = 13107088429700`.
+
+22. **toAssetVolumeUSD**:
+    - This is the sum of `toAssetVolumeUSD` from each interval.
+    - `15017615 + 37867989 = 52885604`.
+
+23. **toRuneAverageSlip**:
+    - The weighted average based on `toRuneCount`.
+    - Formula:
+      \[
+      \text{toRuneAverageSlip
+    } = \frac{(\text{toRuneAverageSlip
+        }_1 \times \text{toRuneCount
+        }_1) + (\text{toRuneAverageSlip
+        }_2 \times \text{toRuneCount
+        }_2)
+    }{\text{toRuneCount
+        }_1 + \text{toRuneCount
+        }_2
+    }
+      \
+]
+      \[
+      \text{toRuneAverageSlip
+    } = \frac{(15.108910891089108 \times 101) + (15.014285714285714 \times 210)
+    }{
+        101 + 210
+    } = 15.045016077170418
+      \
+]
+
+24. **toRuneCount**:
+    - This is the sum of `toRuneCount` from each interval.
+    - `101 + 210 = 311`.
+
+25. **toRuneFees**:
+    - This is the sum of `toRuneFees` from each interval.
+    - `5726489966 + 14216755649 = 19943245615`.
+
+26. **toRuneVolume**:
+    - This is the sum of `toRuneVolume` from each interval.
+    - `3769287597774 + 9467448246660 = 13236735844434`.
+
+27. **toRuneVolumeUSD**:
+    - This is the sum of `toRuneVolumeUSD` from each interval.
+    - `15054618 + 38344748 = 53399366`.
+
+28. **toTradeAverageSlip**:
+    - The weighted average based on `toTradeCount`.
+    - Formula:
+      \[
+      \text{toTradeAverageSlip
+    } = \frac{(\text{toTradeAverageSlip
+        }_1 \times \text{toTradeCount
+        }_1) + (\text{toTradeAverageSlip
+        }_2 \times \text{toTradeCount
+        }_2)
+    }{\text{toTradeCount
+        }_1 + \text{toTradeCount
+        }_2
+    }
+      \
+]
+      \[
+      \text{toTradeAverageSlip
+    } = \frac{(5.336283185840708 \times 113) + (5.429411764705883 \times 170)
+    }{
+        113 + 170
+    } = 5.392226148409894
+      \
+]
+
+29. **toTradeCount**:
+    - This is the sum of `toTradeCount` from each interval.
+    - `113 + 170 = 283`.
+
+30. **toTradeFees**:
+    - This is the sum of `toTradeFees` from each interval.
+    - `2918992140 + 6269363664 = 9188355804`.
+
+31. **toTradeVolume**:
+    - This is the sum of `toTradeVolume` from each interval.
+    - `5759620786951 + 12019976509777 = 17779597296728`.
+
+32. **toTradeVolumeUSD**:
+    - This is the sum of `toTradeVolumeUSD` from each interval.
+    - `23000190 + 48591770 = 71591960`.
+
+33. **totalCount**:
+    - This is the sum of `totalCount` from each interval.
+    - `456 + 925 = 1381`.
+
+34. **totalFees**:
+    - This is the sum of `totalFees` from each interval.
+    - `27455587302 + 89023209483 = 116
+
+
+*/

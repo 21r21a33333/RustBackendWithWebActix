@@ -1,5 +1,6 @@
 use crate::domain::employee::Employee;
 use sqlx::mysql::MySqlPool;
+use std::error::Error;
 
 pub struct EmployeeRepository {
     pool: MySqlPool,
@@ -10,7 +11,7 @@ impl EmployeeRepository {
         EmployeeRepository { pool }
     }
 
-    pub async fn create_employee(&self, employee: Employee) -> Result<(), sqlx::Error> {
+    pub async fn create_employee(&self, employee: Employee) -> Result<(), Box<dyn Error>> {
         sqlx::query!(
             "INSERT INTO employees (name, age, department) VALUES (?, ?, ?)",
             employee.name,

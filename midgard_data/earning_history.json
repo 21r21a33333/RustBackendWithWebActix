@@ -1,0 +1,177 @@
+{
+    "intervals": [
+        {
+            "avgNodeCount": "102.00",
+            "blockRewards": "109953489766",
+            "bondingEarnings": "87749422401",
+            "earnings": "137409077068",
+            "endTime": "1725339600",
+            "liquidityEarnings": "49659654667",
+            "liquidityFees": "27455587302",
+            "pools": [
+                {
+                    "assetLiquidityFees": "1686",
+                    "earnings": "1131627593",
+                    "pool": "ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599",
+                    "rewards": "899649900",
+                    "runeLiquidityFees": "207006645",
+                    "saverEarning": "0",
+                    "totalLiquidityFeesRune": "231977693"
+                },
+                {
+                    "assetLiquidityFees": "690187736",
+                    "earnings": "1258294191",
+                    "pool": "DOGE.DOGE",
+                    "rewards": "837416570",
+                    "runeLiquidityFees": "403666395",
+                    "saverEarning": "4097319191",
+                    "totalLiquidityFeesRune": "420877621"
+                },
+                {
+                    "assetLiquidityFees": "0",
+                    "earnings": "33030886",
+                    "pool": "ETH.LINK-0X514910771AF9CA656AF840DFF83E8264ECF986CA",
+                    "rewards": "33030886",
+                    "runeLiquidityFees": "0",
+                    "saverEarning": "0",
+                    "totalLiquidityFeesRune": "0"
+                }
+            ],
+            "runePriceUSD": "3.995771394047586",
+            "startTime": "1725336000"
+        },
+        {
+            "avgNodeCount": "102.00",
+            "blockRewards": "109392048080",
+            "bondingEarnings": "125595527362",
+            "earnings": "198415257563",
+            "endTime": "1725343200",
+            "liquidityEarnings": "72819730201",
+            "liquidityFees": "89023209483",
+            "pools": [
+                {
+                    "assetLiquidityFees": "6649",
+                    "earnings": "1590042024",
+                    "pool": "ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599",
+                    "rewards": "-16323947",
+                    "runeLiquidityFees": "1509069773",
+                    "saverEarning": "0",
+                    "totalLiquidityFeesRune": "1606365971"
+                },
+                {
+                    "assetLiquidityFees": "8841442360",
+                    "earnings": "1542997603",
+                    "pool": "DOGE.DOGE",
+                    "rewards": "161797785",
+                    "runeLiquidityFees": "1164605241",
+                    "saverEarning": "5118656285",
+                    "totalLiquidityFeesRune": "1381199818"
+                }
+            ],
+            "runePriceUSD": "4.072871128925745",
+            "startTime": "1725339600"
+        }
+    ],
+    "meta": {
+        "avgNodeCount": "102.00",
+        "blockRewards": "219345537846",
+        "bondingEarnings": "213344949763",
+        "earnings": "335824334631",
+        "endTime": "1725343200",
+        "liquidityEarnings": "122479384868",
+        "liquidityFees": "116478796785",
+        "pools": [
+            {
+                "assetLiquidityFees": "8335",
+                "earnings": "2721669617",
+                "pool": "ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599",
+                "rewards": "883325953",
+                "runeLiquidityFees": "1716076418",
+                "saverEarning": "0",
+                "totalLiquidityFeesRune": "1838343664"
+            },
+            {
+                "assetLiquidityFees": "9531630096",
+                "earnings": "2801291794",
+                "pool": "DOGE.DOGE",
+                "rewards": "999214355",
+                "runeLiquidityFees": "1568271636",
+                "saverEarning": "9215975476",
+                "totalLiquidityFeesRune": "1802077439"
+            },
+            {
+                "assetLiquidityFees": "0",
+                "earnings": "409115560",
+                "pool": "ETH.LINK-0X514910771AF9CA656AF840DFF83E8264ECF986CA",
+                "rewards": "388734549",
+                "runeLiquidityFees": "20381011",
+                "saverEarning": "0",
+                "totalLiquidityFeesRune": "20381011"
+            }
+        ],
+        "runePriceUSD": "4.072871128925745",
+        "startTime": "1725336000"
+    }
+}
+/*
+avgNodeCount:
+
+    Since the avgNodeCount is the same across all intervals, the meta value remains the same: "102.00".
+
+blockRewards:
+
+    This is the sum of blockRewards from each interval.
+    109953489766 + 109392048080 = 219345537846.
+
+bondingEarnings:
+
+    This is the sum of bondingEarnings from each interval.
+    87749422401 + 125595527362 = 213344949763.
+
+earnings:
+
+    This is the sum of earnings from each interval.
+    137409077068 + 198415257563 = 335824334631.
+
+liquidityEarnings:
+
+    This is the sum of liquidityEarnings from each interval.
+    49659654667 + 72819730201 = 122479384868.
+
+liquidityFees:
+
+    This is the sum of liquidityFees from each interval.
+    27455587302 + 89023209483 = 116478796785.
+
+pools:
+
+    Each pool in meta aggregates the corresponding pool data across the intervals by summing up the values for each pool.
+
+    Pool ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599:
+        assetLiquidityFees: 1686 + 6649 = 8335.
+        earnings: 1131627593 + 1590042024 = 2721669617.
+        rewards: 899649900 - 16323947 = 883325953.
+        runeLiquidityFees: 207006645 + 1509069773 = 1716076418.
+        saverEarning: 0 + 0 = 0.
+        totalLiquidityFeesRune: 231977693 + 1606365971 = 1838343664.
+
+    Pool DOGE.DOGE:
+        assetLiquidityFees: 690187736 + 8841442360 = 9531630096.
+        earnings: 1258294191 + 1542997603 = 2801291794.
+        rewards: 837416570 + 161797785 = 999214355.
+        runeLiquidityFees: 403666395 + 1164605241 = 1568271636.
+        saverEarning: 4097319191 + 5118656285 = 9215975476.
+        totalLiquidityFeesRune: 420877621 + 1381199818 = 1802077439.
+
+    Pool ETH.LINK-0X514910771AF9CA656AF840DFF83E8264ECF986CA:
+        assetLiquidityFees: 0 + 0 = 0.
+        earnings: 33030886 + 33030886 = 409115560.
+        rewards: 33030886 + 388734549 = 388734549.
+        runeLiquidityFees: 0 + 20381011 = 20381011.
+        saverEarning: 0 + 0 = 0.
+        totalLiquidityFeesRune: 0 + 20381011 = 20381011.
+
+runePriceUSD:
+
+    Since runePriceUSD is constant in each interval, the meta value is the same as the last interval: 4.072871128925745.
+*/
