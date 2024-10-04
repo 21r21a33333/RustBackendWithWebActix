@@ -7,7 +7,7 @@ edition = "2021"
 actix-web = "4"
 serde = {version= "*" ,features= ["derive"] }
 tokio = {version = "*" , features=["macros","rt-multi-thread","full"]}
-sqlx = {version="*" , features= ["mysql","runtime-tokio-native-tls"]}
+sqlx = {version="*" , features= ["mysql","runtime-tokio-native-tls","time","chrono"]}
 reqwest = { version = "*", features = ["json"] }
 serde_json = "*"
 chrono="*"
