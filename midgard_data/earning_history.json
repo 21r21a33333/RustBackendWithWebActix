@@ -1,18 +1,18 @@
 {
     "intervals": [
         {
-            "avgNodeCount": "102.00",
-            "blockRewards": "109953489766",
-            "bondingEarnings": "87749422401",
-            "earnings": "137409077068",
-            "endTime": "1725339600",
-            "liquidityEarnings": "49659654667",
-            "liquidityFees": "27455587302",
+            // "avgNodeCount": "102.00",
+            // "blockRewards": "109953489766",
+            // "bondingEarnings": "87749422401",
+            // "earnings": "137409077068",
+            // "endTime": "1725339600",
+            // "liquidityEarnings": "49659654667",
+            // "liquidityFees": "27455587302",
             "pools": [
                 {
                     "assetLiquidityFees": "1686",
-                    "earnings": "1131627593",
-                    "pool": "ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599",
+                    // "earnings": "1131627593",
+                    // "pool": "ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599",
                     "rewards": "899649900",
                     "runeLiquidityFees": "207006645",
                     "saverEarning": "0",
@@ -37,8 +37,8 @@
                     "totalLiquidityFeesRune": "0"
                 }
             ],
-            "runePriceUSD": "3.995771394047586",
-            "startTime": "1725336000"
+            // "runePriceUSD": "3.995771394047586",
+            // "startTime": "1725336000"
         },
         {
             "avgNodeCount": "102.00",

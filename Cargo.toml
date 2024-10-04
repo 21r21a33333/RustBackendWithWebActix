@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+actix-web = "4"
+serde = {version= "*" ,features= ["derive"] }
+tokio = {version = "*" , features=["macros","rt-multi-thread","full"]}
+sqlx = {version="*" , features= ["mysql","runtime-tokio-native-tls"]}
+reqwest = { version = "*", features = ["json"] }
+serde_json = "*"
+chrono="*"

@@ -1,103 +1,126 @@
-mod config;
-use chrono::{Utc, TimeZone}; // Import chrono for time handling
+use actix_web::{web, HttpResponse, Responder, HttpRequest};
+use sqlx::mysql::MySqlPool; // Adjust this import based on your SQLx setup
+use chrono::{NaiveDateTime, Duration};
 use serde::{Deserialize, Serialize};
-use sqlx::{MySqlPool, Row};
-use std::error::Error;
-use config::database_connection;
 
-#[derive(Debug, Deserialize)]
-struct Response {
-    intervals: Vec<Interval>,
-    meta: Meta,
+
+#[derive(Deserialize)]
+struct RUNEPoolHistoryQuery {
+    interval: Option<String>,
+    count: Option<i64>,
+    from: Option<i64>,
+    to: Option<i64>,
 }
 
-#[derive(Debug, Deserialize)]
-struct Interval {
+// Define the response structs
+#[derive(Serialize)]
+struct RUNEPoolHistoryMeta {
+    start_time: String,
+    end_time: String,
+    start_units: String,
+    start_count: String,
+    end_units: String,
+    end_count: String,
+}
+
+#[derive(Serialize)]
+struct RUNEPoolHistoryInterval {
+    start_time: String,
+    end_time: String,
     count: String,
-    endTime: String,
-    startTime: String,
     units: String,
 }
 
-#[derive(Debug, Deserialize)]
-struct Meta {
-    endCount: String,
-    endTime: String,
-    endUnits: String,
-    startCount: String,
-    startTime: String,
-    startUnits: String,
+#[derive(Serialize)]
+struct RUNEPoolHistoryResponse {
+    intervals: Vec<RUNEPoolHistoryInterval>,
+    meta: RUNEPoolHistoryMeta,
 }
 
-async fn fetch_and_store_data(url: &str, pool: &MySqlPool) -> Result<Response, Box<dyn Error>> {
-    // Fetch data from the URL
-    let response: Response = reqwest::get(url)
-        .await?
-        .json()
-        .await?;
+// Update the handler to accept query parameters
+async fn get_runepool_history(
+    pool: web::Data<MySqlPool>,
+    query: web::Query<RUNEPoolHistoryQuery>,
+) -> impl Responder {
+    // Extract query parameters
+    let interval = query.interval.clone().unwrap_or_default();
+    let count = query.count;
+    let from = query.from;
+    let to = query.to;
 
-    // Iterate over intervals and store them in the database
-    for interval in &response.intervals {
-        let start_time = interval.startTime.parse::<i64>()?;
-        let end_time = interval.endTime.parse::<i64>()?;
-        println!("{:?}", interval);
-        sqlx::query(
-            "INSERT INTO RUNEPool (count, start_time, end_time, units)
-             VALUES (?, from_unixtime(?), from_unixtime(?), ?)
-             ON DUPLICATE KEY UPDATE
-             count = VALUES(count), units = VALUES(units), end_time = VALUES(end_time)"
-        )
-        .bind(&interval.count)
-        .bind(start_time)  // Parse to i64 for epoch time
-        .bind(end_time)
-        .bind(&interval.units)
-        .execute(pool)
-        .await?;
-    }
-    println!("Data stored successfully!");
-    Ok(response)
-}
+    let (start_time, end_time) = match (from, to) {
+        (Some(f), Some(t)) => (f, t),
+        (Some(f), None) => (f, chrono::Utc::now().timestamp()),
+        (None, Some(t)) => (0, t), // Default from to the start of the chain
+        (None, None) => (0, chrono::Utc::now().timestamp()), // Default to start of chain until now
+    };
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let initial_url = "https://midgard.ninerealms.com/v2/history/runepool?interval=5min&count=25&from=1676436900";
+    let mut query_str = String::new();
+    let mut params: Vec<&(dyn sqlx::Encode<'_, sqlx::MySql> + sqlx::Type<sqlx::MySql>)> = vec![];
 
-    // Establish a database connection
-    let pool = database_connection().await?;
+    if interval.is_empty() {
+        // Without Interval: single From..To search
+        query_str.push_str("SELECT * FROM runepool WHERE start_time >= ? AND end_time <= ? LIMIT 400");
+        params.push(&start_time);
+        params.push(&end_time);
+    } else {
+        // With Interval
+        let duration = match interval.as_str() {
+            "5min" => Duration::minutes(5),
+            "hour" => Duration::hours(1),
+            "day" => Duration::days(1),
+            "week" => Duration::weeks(1),
+            "month" => Duration::days(30),
+            "quarter" => Duration::days(90),
+            "year" => Duration::days(365),
+            _ => return HttpResponse::BadRequest().body("Invalid interval"),
+        };
 
-    let mut previous_end_time = String::new();
-    let mut current_url = initial_url.to_string();
-
-    loop {
-        // Fetch and store data
-        let response = fetch_and_store_data(&current_url, &pool).await?;
-        // println!("{:?}",response);
-        // Check if the previous endTime matches the current one
-        if previous_end_time == response.meta.endTime {
-            println!("Same endTime received. Stopping the loop.");
-            break;
+        query_str.push_str("SELECT * FROM runepool WHERE start_time >= ? AND end_time <= ? GROUP BY FLOOR(start_time / ?) LIMIT ?");
+        params.push(&start_time);
+        params.push(&end_time);
+        params.push(&(duration.num_seconds() as i64));
+        
+        if let Some(c) = count {
+            params.push(&(c));
+        } else {
+            return HttpResponse::BadRequest().body("Count must be provided if interval is specified");
         }
-
-        // Check if meta.endTime is greater than the current epoch time
-        let current_epoch_time = Utc::now().timestamp();
-        let meta_end_time = response.meta.endTime.parse::<i64>()?;
-
-        if meta_end_time >= current_epoch_time {
-            println!("meta.endTime is not greater than current epoch time. Stopping the loop.");
-            break;
-        }
-
-        // Update the previous endTime
-        previous_end_time = response.meta.endTime.clone();
-
-        // Update the URL with the new endTime
-        current_url = format!(
-            "https://midgard.ninerealms.com/v2/history/runepool?interval=5min&count=25&from={}",
-            response.meta.endTime
-        );
-
-        println!("Fetching next data with endTime: {}", response.meta.endTime);
     }
 
-    Ok(())
+    // Execute the query
+    let records = sqlx::query(&query_str)
+        .bind(&params)
+        .fetch_all(pool.get_ref())
+        .await
+        .expect("Database query failed");
+
+    // Process records into intervals and meta
+    let mut intervals = vec![];
+    for record in records {
+        let interval = RUNEPoolHistoryInterval {
+            start_time: record.start_time.to_string(),
+            end_time: record.end_time.to_string(),
+            count: record.count.to_string(),
+            units: record.units.to_string(),
+        };
+        intervals.push(interval);
+    }
+
+    let meta = RUNEPoolHistoryMeta {
+        start_time: intervals.first().map_or("0".to_string(), |i| i.start_time.clone()),
+        end_time: intervals.last().map_or("0".to_string(), |i| i.end_time.clone()),
+        start_units: intervals.first().map_or("0".to_string(), |i| i.units.clone()),
+        start_count: intervals.first().map_or("0".to_string(), |i| i.count.clone()),
+        end_units: intervals.last().map_or("0".to_string(), |i| i.units.clone()),
+        end_count: intervals.last().map_or("0".to_string(), |i| i.count.clone()),
+    };
+
+    // Prepare response
+    let response = RUNEPoolHistoryResponse {
+        intervals,
+        meta,
+    };
+
+    HttpResponse::Ok().json(response)
 }
