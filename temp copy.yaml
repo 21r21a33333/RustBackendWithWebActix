@@ -1,30 +1,100 @@
 WITH RankedRecords AS (
 SELECT
 *,
-DATE((start_time)) AS record_date,
-ROW_NUMBER() OVER (PARTITION BY DATE((start_time)) ORDER BY start_time) AS rn_first,
-ROW_NUMBER() OVER (PARTITION BY DATE((start_time)) ORDER BY start_time DESC) AS rn_last
+DATE(start_time) AS record_date,
+ROW_NUMBER() OVER (PARTITION BY DATE(start_time) ORDER BY start_time) AS rn_first,
+ROW_NUMBER() OVER (PARTITION BY DATE(start_time) ORDER BY start_time DESC) AS rn_last
 FROM Swaps
 WHERE start_time IS NOT NULL
+AND start_time >= FROM_UNIXTIME(1721743200)
+AND start_time <= FROM_UNIXTIME(1727708400)
 )
+
 SELECT
-CAST(record_date AS CHAR) AS record_date,
-MAX(CASE WHEN rn_first = 1 THEN start_time END) AS first_Record,
-MAX(CASE WHEN rn_last = 1 THEN end_time END) AS last_Record,
+record_date,
 
-MAX(CASE WHEN rn_first = 1 THEN asset_depth END) AS start_Assert_Depth,
-MAX(CASE WHEN rn_first = 1 THEN liquidty_units END) AS start_LP_Units,
-MAX(CASE WHEN rn_first = 1 THEN members_count END) AS start_Member_Count,
-MAX(CASE WHEN rn_first = 1 THEN rune_depth END) AS start_Rune_Depth,
-MAX(CASE WHEN rn_first = 1 THEN synth_units END) AS start_Synth_Units,
-MAX(CASE WHEN rn_first = 1 THEN livi END) AS start_Luvi,
+-- First record fields
+MAX(CASE WHEN rn_first = 1 THEN start_time END) AS first_start_time,
+MAX(CASE WHEN rn_first = 1 THEN end_time END) AS first_end_time,
+MAX(CASE WHEN rn_first = 1 THEN average_slip END) AS first_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN from_trade_average_slip END) AS first_from_trade_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN from_trade_count END) AS first_from_trade_count,
+MAX(CASE WHEN rn_first = 1 THEN from_trade_fees END) AS first_from_trade_fees,
+MAX(CASE WHEN rn_first = 1 THEN from_trade_volume END) AS first_from_trade_volume,
+MAX(CASE WHEN rn_first = 1 THEN from_trade_volume_usd END) AS first_from_trade_volume_usd,
+MAX(CASE WHEN rn_first = 1 THEN rune_price_usd END) AS first_rune_price_usd,
+MAX(CASE WHEN rn_first = 1 THEN synth_mint_average_slip END) AS first_synth_mint_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN synth_mint_count END) AS first_synth_mint_count,
+MAX(CASE WHEN rn_first = 1 THEN synth_mint_fees END) AS first_synth_mint_fees,
+MAX(CASE WHEN rn_first = 1 THEN synth_mint_volume END) AS first_synth_mint_volume,
+MAX(CASE WHEN rn_first = 1 THEN synth_mint_volume_usd END) AS first_synth_mint_volume_usd,
+MAX(CASE WHEN rn_first = 1 THEN synth_redeem_average_slip END) AS first_synth_redeem_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN synth_redeem_count END) AS first_synth_redeem_count,
+MAX(CASE WHEN rn_first = 1 THEN synth_redeem_fees END) AS first_synth_redeem_fees,
+MAX(CASE WHEN rn_first = 1 THEN synth_redeem_volume END) AS first_synth_redeem_volume,
+MAX(CASE WHEN rn_first = 1 THEN synth_redeem_volume_usd END) AS first_synth_redeem_volume_usd,
+MAX(CASE WHEN rn_first = 1 THEN to_asset_average_slip END) AS first_to_asset_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN to_asset_count END) AS first_to_asset_count,
+MAX(CASE WHEN rn_first = 1 THEN to_asset_fees END) AS first_to_asset_fees,
+MAX(CASE WHEN rn_first = 1 THEN to_asset_volume END) AS first_to_asset_volume,
+MAX(CASE WHEN rn_first = 1 THEN to_asset_volume_usd END) AS first_to_asset_volume_usd,
+MAX(CASE WHEN rn_first = 1 THEN to_rune_average_slip END) AS first_to_rune_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN to_rune_count END) AS first_to_rune_count,
+MAX(CASE WHEN rn_first = 1 THEN to_rune_fees END) AS first_to_rune_fees,
+MAX(CASE WHEN rn_first = 1 THEN to_rune_volume END) AS first_to_rune_volume,
+MAX(CASE WHEN rn_first = 1 THEN to_rune_volume_usd END) AS first_to_rune_volume_usd,
+MAX(CASE WHEN rn_first = 1 THEN to_trade_average_slip END) AS first_to_trade_average_slip,
+MAX(CASE WHEN rn_first = 1 THEN to_trade_count END) AS first_to_trade_count,
+MAX(CASE WHEN rn_first = 1 THEN to_trade_fees END) AS first_to_trade_fees,
+MAX(CASE WHEN rn_first = 1 THEN to_trade_volume END) AS first_to_trade_volume,
+MAX(CASE WHEN rn_first = 1 THEN to_trade_volume_usd END) AS first_to_trade_volume_usd,
+MAX(CASE WHEN rn_first = 1 THEN total_count END) AS first_total_count,
+MAX(CASE WHEN rn_first = 1 THEN total_fees END) AS first_total_fees,
+MAX(CASE WHEN rn_first = 1 THEN total_volume END) AS first_total_volume,
+MAX(CASE WHEN rn_first = 1 THEN total_volume_usd END) AS first_total_volume_usd,
 
-MAX(CASE WHEN rn_last = 1 THEN asset_depth END) AS end_Assert_Depth,
-MAX(CASE WHEN rn_last = 1 THEN liquidty_units END) AS end_LP_Units,
-MAX(CASE WHEN rn_last = 1 THEN  members_count END) AS end_Member_Count,
-MAX(CASE WHEN rn_last = 1 THEN  rune_depth END) AS end_Rune_Depth,
-MAX(CASE WHEN rn_last = 1 THEN  synth_units END) AS end_Synth_Units,
-MAX(CASE WHEN rn_last = 1 THEN luvi END) AS end_Luvi
+-- Last record fields
+MAX(CASE WHEN rn_last = 1 THEN start_time END) AS last_start_time,
+MAX(CASE WHEN rn_last = 1 THEN end_time END) AS last_end_time,
+MAX(CASE WHEN rn_last = 1 THEN average_slip END) AS last_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN from_trade_average_slip END) AS last_from_trade_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN from_trade_count END) AS last_from_trade_count,
+MAX(CASE WHEN rn_last = 1 THEN from_trade_fees END) AS last_from_trade_fees,
+MAX(CASE WHEN rn_last = 1 THEN from_trade_volume END) AS last_from_trade_volume,
+MAX(CASE WHEN rn_last = 1 THEN from_trade_volume_usd END) AS last_from_trade_volume_usd,
+MAX(CASE WHEN rn_last = 1 THEN rune_price_usd END) AS last_rune_price_usd,
+MAX(CASE WHEN rn_last = 1 THEN synth_mint_average_slip END) AS last_synth_mint_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN synth_mint_count END) AS last_synth_mint_count,
+MAX(CASE WHEN rn_last = 1 THEN synth_mint_fees END) AS last_synth_mint_fees,
+MAX(CASE WHEN rn_last = 1 THEN synth_mint_volume END) AS last_synth_mint_volume,
+MAX(CASE WHEN rn_last = 1 THEN synth_mint_volume_usd END) AS last_synth_mint_volume_usd,
+MAX(CASE WHEN rn_last = 1 THEN synth_redeem_average_slip END) AS last_synth_redeem_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN synth_redeem_count END) AS last_synth_redeem_count,
+MAX(CASE WHEN rn_last = 1 THEN synth_redeem_fees END) AS last_synth_redeem_fees,
+MAX(CASE WHEN rn_last = 1 THEN synth_redeem_volume END) AS last_synth_redeem_volume,
+MAX(CASE WHEN rn_last = 1 THEN synth_redeem_volume_usd END) AS last_synth_redeem_volume_usd,
+MAX(CASE WHEN rn_last = 1 THEN to_asset_average_slip END) AS last_to_asset_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN to_asset_count END) AS last_to_asset_count,
+MAX(CASE WHEN rn_last = 1 THEN to_asset_fees END) AS last_to_asset_fees,
+MAX(CASE WHEN rn_last = 1 THEN to_asset_volume END) AS last_to_asset_volume,
+MAX(CASE WHEN rn_last = 1 THEN to_asset_volume_usd END) AS last_to_asset_volume_usd,
+MAX(CASE WHEN rn_last = 1 THEN to_rune_average_slip END) AS last_to_rune_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN to_rune_count END) AS last_to_rune_count,
+MAX(CASE WHEN rn_last = 1 THEN to_rune_fees END) AS last_to_rune_fees,
+MAX(CASE WHEN rn_last = 1 THEN to_rune_volume END) AS last_to_rune_volume,
+MAX(CASE WHEN rn_last = 1 THEN to_rune_volume_usd END) AS last_to_rune_volume_usd,
+MAX(CASE WHEN rn_last = 1 THEN to_trade_average_slip END) AS last_to_trade_average_slip,
+MAX(CASE WHEN rn_last = 1 THEN to_trade_count END) AS last_to_trade_count,
+MAX(CASE WHEN rn_last = 1 THEN to_trade_fees END) AS last_to_trade_fees,
+MAX(CASE WHEN rn_last = 1 THEN to_trade_volume END) AS last_to_trade_volume,
+MAX(CASE WHEN rn_last = 1 THEN to_trade_volume_usd END) AS last_to_trade_volume_usd,
+MAX(CASE WHEN rn_last = 1 THEN total_count END) AS last_total_count,
+MAX(CASE WHEN rn_last = 1 THEN total_fees END) AS last_total_fees,
+MAX(CASE WHEN rn_last = 1 THEN total_volume END) AS last_total_volume,
+MAX(CASE WHEN rn_last = 1 THEN total_volume_usd END) AS last_total_volume_usd
+
 FROM RankedRecords
-GROUP BY record_Date
-ORDER BY record_Date;
+WHERE rn_first = 1 OR rn_last = 1  -- Filter for both first and last records
+GROUP BY record_date
+ORDER BY record_date
+LIMIT 10;

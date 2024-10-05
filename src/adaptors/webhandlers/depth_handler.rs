@@ -84,6 +84,8 @@ struct DepthAndPriceHistoryGroup {
     end_assert_price_usd:Decimal,
     start_assert_price:Decimal,
     start_assert_price_usd:Decimal,
+    end_synth_supply:i64,
+    end_units:i64
 }
 
 
@@ -171,6 +173,8 @@ async fn fetch_data_for_intervals(
         )
         SELECT
         CAST(record_date AS CHAR) AS record_date,
+        MAX(CASE WHEN rn_last = 1 THEN synth_supply END) AS end_synth_supply,
+        MAX(CASE WHEN rn_last = 1 THEN units END) AS end_units,
         MAX(CASE WHEN rn_first = 1 THEN start_time END) AS first_Record,
         MAX(CASE WHEN rn_last = 1 THEN DATE_ADD(start_time, INTERVAL 5 MINUTE) END) AS last_Record,
         MAX(CASE WHEN rn_first = 1 THEN asset_depth END) AS start_Asset_Depth,
@@ -187,7 +191,8 @@ async fn fetch_data_for_intervals(
         MAX(CASE WHEN rn_last = 1 THEN rune_depth END) AS end_Rune_Depth,
         MAX(CASE WHEN rn_last = 1 THEN synth_units END) AS end_Synth_Units,
         MAX(CASE WHEN rn_last = 1 THEN luvi END) AS end_Luvi,MAX(CASE WHEN rn_last = 1 THEN asset_price END) AS end_assert_price,
-        MAX(CASE WHEN rn_last = 1 THEN asset_price_usd END) AS end_assert_price_usd
+        MAX(CASE WHEN rn_last = 1 THEN asset_price_usd END) AS end_assert_price_usd,
+        MAX(CASE WHEN rn_last = 1 THEN synth_supply END) AS end_synth_supply
         FROM RankedRecords
         GROUP BY record_Date
         ORDER BY record_Date
@@ -216,18 +221,18 @@ async fn fetch_data_for_intervals(
     
     for record in records.iter() {
         intervals.push(DepthAndPriceHistoryInterval {
-            asset_depth: record.start_Asset_Depth.to_string(),
-            asset_price: record.start_assert_price.to_string(),
-            asset_price_usd: record.start_assert_price_usd.to_string(),
+            asset_depth: record.end_Asset_Depth.to_string(),
+            asset_price: record.end_assert_price.to_string(),
+            asset_price_usd: record.end_assert_price_usd.to_string(),
             end_time: record.last_Record.to_string(),
-            liquidity_units: record.start_LP_Units.to_string(),
-            luvi: record.start_Luvi.to_string(),
-            members_count: record.start_Member_Count.to_string(),
-            rune_depth: record.start_Rune_Depth.to_string(),
+            liquidity_units: record.end_LP_Units.to_string(),
+            luvi: record.end_Luvi.to_string(),
+            members_count: record.end_Member_Count.to_string(),
+            rune_depth: record.end_Rune_Depth.to_string(),
             start_time: record.first_Record.to_string(),
-            synth_supply: record.start_Synth_Units.to_string(),
+            synth_supply: record.end_synth_supply.to_string(),
             synth_units: record.start_Synth_Units.to_string(),
-            units: record.start_Synth_Units.to_string(),
+            units: record.end_units.to_string(),
         });
     }
     let endtime = records.last().unwrap().last_Record.to_string();

@@ -6,3 +6,6 @@ pub use depth_handler::*;
 
 pub mod swaps_handler;
 pub use swaps_handler::*;
+
+pub mod queries;
+pub use queries::*;
