@@ -1,0 +1,46 @@
+WITH RankedRecords AS (
+SELECT
+start_time,
+end_time,
+asset_depth,
+asset_price,
+asset_price_usd,
+liquidity_units, -- corrected from 'liquidty_units'
+luvi,
+members_count,
+rune_depth,
+synth_supply,
+synth_units,
+units,
+DATE((start_time)) AS record_date,
+ROW_NUMBER() OVER (PARTITION BY DATE((start_time)) ORDER BY start_time) AS rn_first,
+ROW_NUMBER() OVER (PARTITION BY DATE((start_time)) ORDER BY start_time DESC) AS rn_last
+FROM Btcdepth
+WHERE start_time IS NOT NULL and start_time >= FROM_UNIXTIME(1721743200) AND start_time <=FROM_UNIXTIME(1727708400)
+)
+SELECT
+CAST(record_date AS CHAR) AS record_date,
+MAX(CASE WHEN rn_first = 1 THEN start_time END) AS first_Record,
+MAX(CASE WHEN rn_last = 1 THEN DATE_ADD(start_time, INTERVAL 5 MINUTE) END) AS last_Record,
+MAX(CASE WHEN rn_first = 1 THEN asset_depth END) AS start_Asset_Depth,
+MAX(CASE WHEN rn_first = 1 THEN liquidity_units END) AS start_LP_Units, -- corrected spelling
+MAX(CASE WHEN rn_first = 1 THEN members_count END) AS start_Member_Count,
+MAX(CASE WHEN rn_first = 1 THEN rune_depth END) AS start_Rune_Depth,
+MAX(CASE WHEN rn_first = 1 THEN synth_units END) AS start_Synth_Units,
+MAX(CASE WHEN rn_first = 1 THEN luvi END) AS start_Luvi,
+MAX(CASE WHEN rn_first = 1 THEN asset_price END) AS start_assert_price,
+MAX(CASE WHEN rn_first = 1 THEN asset_price_usd END) AS start_assert_price_usd
+
+
+MAX(CASE WHEN rn_last = 1 THEN asset_depth END) AS end_Asset_Depth,
+MAX(CASE WHEN rn_last = 1 THEN liquidity_units END) AS end_LP_Units, -- corrected spelling
+MAX(CASE WHEN rn_last = 1 THEN members_count END) AS end_Member_Count,
+MAX(CASE WHEN rn_last = 1 THEN rune_depth END) AS end_Rune_Depth,
+MAX(CASE WHEN rn_last = 1 THEN synth_units END) AS end_Synth_Units,
+MAX(CASE WHEN rn_last = 1 THEN luvi END) AS end_Luvi,
+MAX(CASE WHEN rn_last = 1 THEN asset_price END) AS end_assert_price,
+MAX(CASE WHEN rn_last = 1 THEN asset_price_usd END) AS end_assert_price_usd
+FROM RankedRecords
+GROUP BY record_Date
+ORDER BY record_Date
+LIMIT 100;

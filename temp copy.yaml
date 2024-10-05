@@ -1,0 +1,30 @@
+WITH RankedRecords AS (
+SELECT
+*,
+DATE((start_time)) AS record_date,
+ROW_NUMBER() OVER (PARTITION BY DATE((start_time)) ORDER BY start_time) AS rn_first,
+ROW_NUMBER() OVER (PARTITION BY DATE((start_time)) ORDER BY start_time DESC) AS rn_last
+FROM Swaps
+WHERE start_time IS NOT NULL
+)
+SELECT
+CAST(record_date AS CHAR) AS record_date,
+MAX(CASE WHEN rn_first = 1 THEN start_time END) AS first_Record,
+MAX(CASE WHEN rn_last = 1 THEN end_time END) AS last_Record,
+
+MAX(CASE WHEN rn_first = 1 THEN asset_depth END) AS start_Assert_Depth,
+MAX(CASE WHEN rn_first = 1 THEN liquidty_units END) AS start_LP_Units,
+MAX(CASE WHEN rn_first = 1 THEN members_count END) AS start_Member_Count,
+MAX(CASE WHEN rn_first = 1 THEN rune_depth END) AS start_Rune_Depth,
+MAX(CASE WHEN rn_first = 1 THEN synth_units END) AS start_Synth_Units,
+MAX(CASE WHEN rn_first = 1 THEN livi END) AS start_Luvi,
+
+MAX(CASE WHEN rn_last = 1 THEN asset_depth END) AS end_Assert_Depth,
+MAX(CASE WHEN rn_last = 1 THEN liquidty_units END) AS end_LP_Units,
+MAX(CASE WHEN rn_last = 1 THEN  members_count END) AS end_Member_Count,
+MAX(CASE WHEN rn_last = 1 THEN  rune_depth END) AS end_Rune_Depth,
+MAX(CASE WHEN rn_last = 1 THEN  synth_units END) AS end_Synth_Units,
+MAX(CASE WHEN rn_last = 1 THEN luvi END) AS end_Luvi
+FROM RankedRecords
+GROUP BY record_Date
+ORDER BY record_Date;

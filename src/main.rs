@@ -1,3 +1,4 @@
+#![allow(warnings)]
 use actix_web::{
     dev::Path,
     get,
@@ -11,7 +12,9 @@ mod config;
 use config::database_connection;
 
 mod adaptors;
-use adaptors::webhandlers::runepool_handler::get_runepool_history;
+use adaptors::webhandlers::runepool_handler::*;
+use adaptors::webhandlers::depth_handler::*;
+use adaptors::webhandlers::swaps_handler::*;
 
 #[get("/")]
 async fn index() -> impl Responder {
@@ -29,6 +32,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(database.clone()))
             .service(index)
             .service(get_runepool_history)
+            .service(get_depth_and_history)
+            .service(get_swaps_history)
     })
     .bind(("127.0.0.1", 3000))?
     .run()

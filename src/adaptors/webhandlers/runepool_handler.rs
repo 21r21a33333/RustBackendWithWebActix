@@ -29,6 +29,7 @@ struct RUNEPoolHistoryMeta {
     start_count: String,
     end_units: String,
     end_count: String,
+    next_page: Option<String>,
 }
 
 #[derive(Serialize,FromRow,Debug)]
@@ -42,7 +43,6 @@ struct RUNEPoolHistoryInterval {
 
 #[derive(FromRow,Debug)]
 struct RUNEPoolHistoryIntervalGroup {
-
     record_date: String,
     // record_date: NaiveDate,
     first_record: DateTime<Utc>,
@@ -100,7 +100,7 @@ async fn get_runepool_history(
 
     match result {
         Ok(response) => HttpResponse::Ok().json(response),
-        Err(e) => HttpResponse::InternalServerError().body(format!("Error: {:?}", e)),
+         Err(e) => HttpResponse::InternalServerError().json(serde_json::json!({ "error": format!("Error: {:?}", e) })),
     }
 }
 async fn fetch_data_for_intervals(
@@ -154,12 +154,22 @@ async fn fetch_data_for_intervals(
     let mut intervals = Vec::<RUNEPoolHistoryInterval>::new();
 
     // Execute the query using `sqlx`
-    let records: Vec<RUNEPoolHistoryIntervalGroup> = sqlx::query_as::<_, RUNEPoolHistoryIntervalGroup>(&query_str)
+    let records: Vec<RUNEPoolHistoryIntervalGroup> = match sqlx::query_as::<_, RUNEPoolHistoryIntervalGroup>(&query_str)
         .bind(from)
         .bind(to)
         .bind(count)
         .fetch_all(pool)
-        .await?;
+        .await {
+            Ok(records) => records,
+            Err(e) => {
+                eprintln!("Error: {:?}", e);
+                return Err(e);
+            }
+        };
+        if records.is_empty() {
+            eprintln!("No records found for the given parameters.");
+            return Err(sqlx::Error::RowNotFound); // Return RowNotFound if no records
+        }
 
     // Populate the response intervals
     for record in records.iter() {
@@ -171,14 +181,16 @@ async fn fetch_data_for_intervals(
         });
     }
 
+    let endtime = records[records.len() - 1].last_record.to_string();
     // Build the metadata
     let metadata = RUNEPoolHistoryMeta {
         start_time: records[0].first_record.to_string(),
-        end_time: records[records.len() - 1].last_record.to_string(),
+        end_time: endtime.clone(),  // Clone to avoid borrowing issues
         start_units: records[0].first_units.to_string(),
         start_count: records[0].first_count.to_string(),
         end_units: records[records.len() - 1].last_units.to_string(),
         end_count: records[records.len() - 1].last_count.to_string(),
+        next_page: Some(endtime.parse::<DateTime<Utc>>().map(|dt| dt.timestamp().to_string()).unwrap_or_else(|_| "Invalid timestamp".to_string())),
     };
 
     // Build the final response
