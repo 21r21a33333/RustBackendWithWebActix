@@ -1,4 +1,5 @@
-use crate::config; 
+
+use crate::config; // Assuming your config module is defined elsewhere
 use chrono::Utc;
 use config::{database_connection, read_config, update_config};
 use serde::{Deserialize, Serialize};
@@ -70,10 +71,10 @@ async fn fetch_and_store_depth_data(
 
                     // Insert data into the BTCDepth table
                     sqlx::query(
-                        "INSERT INTO BTCDepth (start_time, end_time, asset_depth, asset_price, asset_price_usd, 
+                        "INSERT INTO btcdepth (start_time, end_time, asset_depth, asset_price, asset_price_usd, 
                                                liquidity_units, luvi, members_count, rune_depth, synth_supply, 
                                                synth_units, units)
-                         VALUES (?, from_unixtime(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                         VALUES (from_unixtime(?), from_unixtime(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                          ON DUPLICATE KEY UPDATE
                          asset_depth = VALUES(asset_depth),
                          asset_price = VALUES(asset_price),
@@ -126,7 +127,7 @@ async fn fetch_and_store_depth_data(
 
 
 pub async fn fetch_depth_main() -> Result<(), Box<dyn Error>> {
-    let config_path = "depthconfig.json"; // Path to your config file
+    let config_path = "status/depthconfig.json"; // Path to your config file
 
     // Read the initial configuration
     let mut config = read_config(config_path)?;
@@ -178,3 +179,4 @@ pub async fn fetch_depth_main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+

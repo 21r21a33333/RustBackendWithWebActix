@@ -55,7 +55,7 @@ async fn fetch_and_store_data(url: &str, pool: &MySqlPool) -> Result<Response, B
                     // println!("Storing data for interval: {:?}", interval);
                     // println!("Storing data for interval: {:?}", interval);
                     sqlx::query(
-                        "INSERT INTO RUNEPool (count, start_time, end_time, units)
+                        "INSERT INTO runepool (count, start_time, end_time, units)
                          VALUES (?, from_unixtime(?), from_unixtime(?), ?)
                          ON DUPLICATE KEY UPDATE
                          count = VALUES(count), units = VALUES(units), end_time = VALUES(end_time)"
@@ -89,7 +89,7 @@ async fn fetch_and_store_data(url: &str, pool: &MySqlPool) -> Result<Response, B
 
 
 pub async fn fetch_runepool_main() -> Result<(), Box<dyn Error>> {
-    let config_path = "runepoolconfig.json"; // Path to your config file
+    let config_path = "status/runepoolconfig.json"; // Path to your config file
 
 //     // Read the initial configuration
     let mut config = read_config(config_path)?;

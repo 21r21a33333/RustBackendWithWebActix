@@ -80,7 +80,7 @@ async fn fetch_and_store_earnings_data(
                     // Insert into Earnings table
                     sqlx::query(
                         r#"
-                        INSERT INTO Earnings (
+                        INSERT INTO earnings (
                             start_time, end_time, avg_node_count,
                             block_rewards, bonding_earnings, earnings,
                             liquidity_earnings, liquidity_fees, rune_price_usd
@@ -113,7 +113,7 @@ async fn fetch_and_store_earnings_data(
                     // Fetch the `id` from the `Earnings` table where start_time equals the inserted value
                     let earnings_id = sqlx::query(
                         r#"
-                        SELECT id FROM Earnings WHERE start_time = FROM_UNIXTIME(?)
+                        SELECT id FROM earnings WHERE start_time = FROM_UNIXTIME(?)
                         "#,
                     )
                     .bind(start_time)
@@ -134,7 +134,7 @@ async fn fetch_and_store_earnings_data(
                         // Insert data into the EarningsPools table
                         sqlx::query(
                             r#"
-                                INSERT INTO EarningsPools (
+                                INSERT INTO earningspools (
                                     earnings_id, pool, asset_liquidity_fees,
                                     earnings, rewards, rune_liquidity_fees,
                                     saver_earning, total_liquidity_fees_rune
@@ -167,7 +167,7 @@ async fn fetch_and_store_earnings_data(
 
 
 pub async fn fetch_earnings_main() -> Result<(), Box<dyn Error>> {
-    let config_path = "earningsconfig.json"; // Path to your config file
+    let config_path = "status/earningsconfig.json"; // Path to your config file
 
     // Read the initial configuration
     let config = read_config(config_path)?;

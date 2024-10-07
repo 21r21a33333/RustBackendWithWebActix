@@ -155,7 +155,7 @@ async fn fetch_and_store_depth_data(
 
                     sqlx::query(
                         r#"
-                        INSERT INTO Swaps (
+                        INSERT INTO swaps (
                             start_time, end_time, average_slip,
                             from_trade_average_slip, from_trade_count,
                             from_trade_fees, from_trade_volume, from_trade_volume_usd,
@@ -282,7 +282,7 @@ async fn fetch_and_store_depth_data(
 
 
 pub async fn fetch_swaps_main() -> Result<(), Box<dyn Error>> {
-    let config_path = "swapconfig.json"; // Path to your config file
+    let config_path = "status/swapconfig.json"; // Path to your config file
 
     // Read the initial configuration
     let mut config = read_config(config_path)?;

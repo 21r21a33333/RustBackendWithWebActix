@@ -11,3 +11,4 @@ sqlx = {version="0.6" , features= ["mysql","runtime-tokio-native-tls","time","ch
 reqwest = { version = "*", features = ["json"] }
 serde_json = "*"
 chrono="*"
+dotenv = "*"
