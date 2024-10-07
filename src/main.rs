@@ -22,6 +22,11 @@ use adaptors::webhandlers::swaps_handler::*;
 mod utilities;
 use utilities::Fetch_data::{fetch_depth_main, fetch_swaps_main, fetch_runepool_main, fetch_earnings_main};
 
+
+mod domain;
+use adaptors::db::*;
+
+
 #[get("/")]
 async fn index() -> impl Responder {
     "server index route hit"
