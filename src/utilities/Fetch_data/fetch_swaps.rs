@@ -1,12 +1,13 @@
-mod config; // Assuming your config module is defined elsewhere
+ // Assuming your config module is defined elsewhere
 use chrono::Utc;
-use config::{database_connection, read_config, update_config};
 use serde::{Deserialize, Serialize};
 use sqlx::{MySqlPool, Row};
 use std::error::Error;
 use std::num::ParseIntError;
 use std::time::Duration;
 use tokio::time::sleep;
+use crate::config;
+use config::{database_connection, read_config, update_config};
 
 #[derive(Debug, Deserialize)]
 struct SwapsResponse {
@@ -279,8 +280,8 @@ async fn fetch_and_store_depth_data(
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+
+pub async fn fetch_swaps_main() -> Result<(), Box<dyn Error>> {
     let config_path = "swapconfig.json"; // Path to your config file
 
     // Read the initial configuration

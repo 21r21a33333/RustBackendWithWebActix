@@ -1,6 +1,7 @@
 
-        pub fn getswapquery(partition_by_clause: &str) -> String {
-            let swap_query_str = format!(r#"
+pub fn getswapquery(partition_by_clause: &str) -> String {
+    let swap_query_str = format!(
+        r#"
                             WITH RankedRecords AS (
                     SELECT 
                         *,
@@ -116,11 +117,18 @@
                 ORDER BY record_date
                 LIMIT ?;
 
-    "#, partition_by_clause, partition_by_clause, partition_by_clause,partition_by_clause,partition_by_clause,partition_by_clause,partition_by_clause,partition_by_clause,partition_by_clause,partition_by_clause);
+    "#,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause,
+        partition_by_clause
+    );
 
-        return swap_query_str;
-        } 
-
-
-
-
+    return swap_query_str;
+}

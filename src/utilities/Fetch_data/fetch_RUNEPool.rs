@@ -1,4 +1,7 @@
-mod config;
+
+
+
+
 use chrono::Utc; // We no longer need TimeZone
 use serde::{Deserialize, Serialize};
 use sqlx::{MySqlPool, Row};
@@ -6,7 +9,8 @@ use std::error::Error;
 use std::num::ParseIntError;
 use std::time::Duration;
 use tokio::time::sleep;
-use config::database_connection;
+use crate::config;
+use config::{database_connection,read_config, update_config};
 
 #[derive(Debug, Deserialize)]
 struct Response {
@@ -39,7 +43,7 @@ async fn fetch_and_store_data(url: &str, pool: &MySqlPool) -> Result<Response, B
     loop {
         match reqwest::get(url).await {
             Ok(response) => {
-                println!("{:?}",response);
+                // println!("{:?}",response);
                 let response: Response = response.json().await?;
 
                 // Store intervals in the database
@@ -83,9 +87,14 @@ async fn fetch_and_store_data(url: &str, pool: &MySqlPool) -> Result<Response, B
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let initial_url = "https://midgard.ninerealms.com/v2/history/runepool?interval=5min&count=25&from=1683044400";
+
+pub async fn fetch_runepool_main() -> Result<(), Box<dyn Error>> {
+    let config_path = "runepoolconfig.json"; // Path to your config file
+
+//     // Read the initial configuration
+    let mut config = read_config(config_path)?;
+    let initial_url = config.api_url.clone(); // Use the URL from the config
+    
 
     // Establish database connection
     let pool = database_connection().await.map_err(|e| format!("DB connection error: {}", e))?;
@@ -109,13 +118,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     println!("meta.endTime is not greater than current epoch time. Stopping the loop.");
                     break;
                 }
-
+                
                 previous_end_time = response.meta.endTime.clone();
                 current_url = format!(
-                    "https://midgard.ninerealms.com/v2/history/runepool?interval=5min&count=25&from={}",
+                    "https://midgard.ninerealms.com/v2/history/runepool?interval=hour&count=25&from={}",
                     response.meta.endTime
                 );
-
+                
+                        // Update the configuration file with the new URL
+                        update_config(config_path, &current_url)?;
+                        // Wait for one second before continuing
+                        sleep(Duration::from_secs(1)).await;
                 println!("Fetching next data with endTime: {}", response.meta.endTime);
             }
             Err(err) => {

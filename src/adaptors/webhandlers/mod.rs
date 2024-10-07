@@ -9,3 +9,6 @@ pub use swaps_handler::*;
 
 pub mod queries;
 pub use queries::*;
+
+pub mod earnings_handler;
+pub use earnings_handler::*;

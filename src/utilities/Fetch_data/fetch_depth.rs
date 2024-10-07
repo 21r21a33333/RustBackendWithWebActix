@@ -1,4 +1,4 @@
-mod config; // Assuming your config module is defined elsewhere
+use crate::config; 
 use chrono::Utc;
 use config::{database_connection, read_config, update_config};
 use serde::{Deserialize, Serialize};
@@ -124,13 +124,13 @@ async fn fetch_and_store_depth_data(
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let config_path = "config.json"; // Path to your config file
+
+pub async fn fetch_depth_main() -> Result<(), Box<dyn Error>> {
+    let config_path = "depthconfig.json"; // Path to your config file
 
     // Read the initial configuration
     let mut config = read_config(config_path)?;
-    let initial_url = config.depth_api_url.clone(); // Use the URL from the config
+    let initial_url = config.api_url.clone(); // Use the URL from the config
 
     // Establish a database connection
     let pool = database_connection().await?;

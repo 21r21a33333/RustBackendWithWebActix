@@ -1,4 +1,4 @@
-mod config; // Assuming your config module is defined elsewhere
+use  crate::config; // Assuming your config module is defined elsewhere
 use chrono::Utc;
 use config::{database_connection, read_config, update_config};
 use serde::{Deserialize, Serialize};
@@ -165,8 +165,8 @@ async fn fetch_and_store_earnings_data(
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+
+pub async fn fetch_earnings_main() -> Result<(), Box<dyn Error>> {
     let config_path = "earningsconfig.json"; // Path to your config file
 
     // Read the initial configuration

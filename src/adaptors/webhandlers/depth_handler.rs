@@ -1,18 +1,20 @@
-
 use chrono::Utc;
 
 // use sqlx::types::chrono::Utc;
 
-use actix_web::{web::{Data,Json,Query}, HttpResponse, Responder,post,get,};
+use actix_web::{
+    get, post,
+    web::{Data, Json, Query},
+    HttpResponse, Responder,
+};
 use serde::{Deserialize, Serialize};
 
-use sqlx::{types::Decimal, FromRow};
+use chrono::{DateTime, Duration, NaiveDate, NaiveDateTime};
 use sqlx::query;
+use sqlx::types::time::PrimitiveDateTime;
 use sqlx::Error;
 use sqlx::MySqlPool;
-use chrono::{DateTime, Duration, NaiveDate, NaiveDateTime};
-use sqlx::types::time::PrimitiveDateTime;
-
+use sqlx::{types::Decimal, FromRow};
 
 #[derive(Deserialize)]
 struct DepthAndPriceHistoryQuery {
@@ -62,34 +64,31 @@ struct DepthAndPriceHistoryResponse {
     meta: DepthAndPriceHistoryMeta,
 }
 
-#[derive(FromRow,Debug)]
+#[derive(FromRow, Debug)]
 struct DepthAndPriceHistoryGroup {
     record_date: String,
     // record_date: NaiveDate,
     first_Record: DateTime<Utc>,
     last_Record: DateTime<Utc>,
-    start_Asset_Depth:i64,
-    start_LP_Units:i64,
-    start_Member_Count:i64,
-    start_Rune_Depth:i64,
-    start_Synth_Units:i64,
-    start_Luvi:Decimal,
-    end_Asset_Depth:i64,
-    end_LP_Units:i64,
-    end_Member_Count:i64,
-    end_Rune_Depth:i64,
-    end_Synth_Units:i64,
-    end_Luvi:Decimal,
-    end_assert_price:Decimal,
-    end_assert_price_usd:Decimal,
-    start_assert_price:Decimal,
-    start_assert_price_usd:Decimal,
-    end_synth_supply:i64,
-    end_units:i64
+    start_Asset_Depth: i64,
+    start_LP_Units: i64,
+    start_Member_Count: i64,
+    start_Rune_Depth: i64,
+    start_Synth_Units: i64,
+    start_Luvi: Decimal,
+    end_Asset_Depth: i64,
+    end_LP_Units: i64,
+    end_Member_Count: i64,
+    end_Rune_Depth: i64,
+    end_Synth_Units: i64,
+    end_Luvi: Decimal,
+    end_assert_price: Decimal,
+    end_assert_price_usd: Decimal,
+    start_assert_price: Decimal,
+    start_assert_price_usd: Decimal,
+    end_synth_supply: i64,
+    end_units: i64,
 }
-
-
-
 
 #[get("/depths/BTC.BTC")]
 async fn get_depth_and_history(
@@ -103,7 +102,7 @@ async fn get_depth_and_history(
         return HttpResponse::BadRequest().body("Count must be between 1 and 400");
     }
 
-    let to = query.to.unwrap_or_else(|| chrono::Utc::now().timestamp());  // Default to current time
+    let to = query.to.unwrap_or_else(|| chrono::Utc::now().timestamp()); // Default to current time
     let from = query.from.unwrap_or_else(|| {
         // Calculate from based on the interval and count if not provided
         match interval.as_str() {
@@ -113,25 +112,28 @@ async fn get_depth_and_history(
             "month" => to - Duration::days(30 * count).num_seconds(),
             "quarter" => to - Duration::days(90 * count).num_seconds(),
             "year" => to - Duration::days(365 * count).num_seconds(),
-            a => if a.len() ==0 {
-                to - Duration::days(count).num_seconds()
-            }else{
-                -1
-            },  // Handle invalid interval
+            a => {
+                if a.len() == 0 {
+                    to - Duration::days(count).num_seconds()
+                } else {
+                    -1
+                }
+            } // Handle invalid interval
         }
     });
     if from == -1 {
         return HttpResponse::BadRequest().body("Invalid interval");
     }
 
-    let result = fetch_data_for_intervals(&pool, from, to, &interval, count).await;
+    let result: Result<DepthAndPriceHistoryResponse, Error> =
+        fetch_data_for_intervals(&pool, from, to, &interval, count).await;
 
     match result {
         Ok(response) => HttpResponse::Ok().json(response),
-        Err(e) => HttpResponse::InternalServerError().json(serde_json::json!({ "error": format!("Error: {:?}", e) })),
+        Err(e) => HttpResponse::InternalServerError()
+            .json(serde_json::json!({ "error": format!("Error: {:?}", e) })),
     }
 }
-
 
 async fn fetch_data_for_intervals(
     pool: &MySqlPool,
@@ -139,18 +141,18 @@ async fn fetch_data_for_intervals(
     to: i64,
     interval: &str,
     count: i64,
-) -> Result<DepthAndPriceHistoryResponse, sqlx::Error>{
+) -> Result<DepthAndPriceHistoryResponse, sqlx::Error> {
     let partition_by_clause = match interval {
-        "hour" => "DATE_FORMAT(start_time, '%Y-%m-%d %H')",   // Group by year, month, day, and hour
-        "day" => "DATE(start_time)",                          // Group by day
-        "week" => "YEARWEEK(start_time)",                     // Group by year and week
-        "month" => "DATE_FORMAT(start_time, '%Y-%m')",        // Group by year and month
-        "year" => "YEAR(start_time)",                         // Group by year
-        _ => "DATE(start_time)",                              // Default to day
+        "hour" => "DATE_FORMAT(start_time, '%Y-%m-%d %H')", // Group by year, month, day, and hour
+        "day" => "DATE(start_time)",                        // Group by day
+        "week" => "YEARWEEK(start_time)",                   // Group by year and week
+        "month" => "DATE_FORMAT(start_time, '%Y-%m')",      // Group by year and month
+        "year" => "YEAR(start_time)",                       // Group by year
+        _ => "DATE(start_time)",                            // Default to day
     };
 
-
-    let query_str = format!(r#"
+    let query_str = format!(
+        r#"
             WITH RankedRecords AS (
                 SELECT
                 start_time,
@@ -197,16 +199,20 @@ async fn fetch_data_for_intervals(
         GROUP BY record_Date
         ORDER BY record_Date
         LIMIT ?;
-    "#, partition_by_clause, partition_by_clause, partition_by_clause);
+    "#,
+        partition_by_clause, partition_by_clause, partition_by_clause
+    );
 
-    let mut intervals= Vec::<DepthAndPriceHistoryInterval>::new();
+    let mut intervals = Vec::<DepthAndPriceHistoryInterval>::new();
 
-    let records: Vec<DepthAndPriceHistoryGroup> = match sqlx::query_as::<_, DepthAndPriceHistoryGroup>(&query_str)
-        .bind(from)
-        .bind(to)
-        .bind(count)
-        .fetch_all(pool)
-        .await {
+    let records: Vec<DepthAndPriceHistoryGroup> =
+        match sqlx::query_as::<_, DepthAndPriceHistoryGroup>(&query_str)
+            .bind(from)
+            .bind(to)
+            .bind(count)
+            .fetch_all(pool)
+            .await
+        {
             Ok(records) => records,
             Err(e) => {
                 eprintln!("Error: {:?}", e);
@@ -218,7 +224,7 @@ async fn fetch_data_for_intervals(
         eprintln!("No records found for the given parameters.");
         return Err(sqlx::Error::RowNotFound);
     }
-    
+
     for record in records.iter() {
         intervals.push(DepthAndPriceHistoryInterval {
             asset_depth: record.end_Asset_Depth.to_string(),
@@ -251,28 +257,43 @@ async fn fetch_data_for_intervals(
         start_rune_depth: records.first().unwrap().start_Rune_Depth.to_string(),
         start_synth_units: records.first().unwrap().start_Synth_Units.to_string(),
         start_time: records.first().unwrap().first_Record.to_string(),
-        next_page: Some(endtime.parse::<DateTime<Utc>>().map(|dt| dt.timestamp().to_string()).unwrap_or_else(|_| "Invalid timestamp".to_string())),
+        next_page: Some(
+            endtime
+                .parse::<DateTime<Utc>>()
+                .map(|dt| dt.timestamp().to_string())
+                .unwrap_or_else(|_| "Invalid timestamp".to_string()),
+        ),
     };
-    let response = DepthAndPriceHistoryResponse {
-        intervals,
-        meta,
-    };
+    let response = DepthAndPriceHistoryResponse { intervals, meta };
     return Ok(response);
-
 }
 
 // Helper function to calculate LUVI increase
 fn calculate_luvi_increase(records: &[DepthAndPriceHistoryInterval]) -> f64 {
     let start_luvi = records.first().unwrap().luvi.parse::<f64>().unwrap_or(0.0);
     let end_luvi = records.last().unwrap().luvi.parse::<f64>().unwrap_or(0.0);
-    if start_luvi == 0.0 { return 0.0; }
+    if start_luvi == 0.0 {
+        return 0.0;
+    }
     (end_luvi / start_luvi)
 }
 
 // Helper function to calculate price shift loss
 fn calculate_price_shift_loss(records: &[DepthAndPriceHistoryInterval]) -> f64 {
-    let start_depth = records.first().unwrap().asset_depth.parse::<f64>().unwrap_or(0.0);
-    let end_depth = records.last().unwrap().asset_depth.parse::<f64>().unwrap_or(0.0);
-    if start_depth == 0.0 { return 0.0; }
+    let start_depth = records
+        .first()
+        .unwrap()
+        .asset_depth
+        .parse::<f64>()
+        .unwrap_or(0.0);
+    let end_depth = records
+        .last()
+        .unwrap()
+        .asset_depth
+        .parse::<f64>()
+        .unwrap_or(0.0);
+    if start_depth == 0.0 {
+        return 0.0;
+    }
     (end_depth / start_depth)
 }

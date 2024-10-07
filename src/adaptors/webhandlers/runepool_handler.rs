@@ -1,18 +1,21 @@
-use std::{ops::BitAnd, str::FromStr};
 use chrono::Utc;
+use std::{ops::BitAnd, str::FromStr};
 
 // use sqlx::types::chrono::Utc;
 
-use actix_web::{web::{Data,Json,Query}, HttpResponse, Responder,post,get,};
+use actix_web::{
+    get, post,
+    web::{Data, Json, Query},
+    HttpResponse, Responder,
+};
 use serde::{Deserialize, Serialize};
 
-use sqlx::FromRow;
-use sqlx::query;
-use sqlx::Error;
-use sqlx::MySqlPool;
 use chrono::{DateTime, Duration, NaiveDate, NaiveDateTime};
+use sqlx::query;
 use sqlx::types::time::PrimitiveDateTime;
-
+use sqlx::Error;
+use sqlx::FromRow;
+use sqlx::MySqlPool;
 
 #[derive(Deserialize)]
 struct RUNEPoolHistoryQuery {
@@ -21,7 +24,7 @@ struct RUNEPoolHistoryQuery {
     from: Option<i64>,
     to: Option<i64>,
 }
-#[derive(Serialize,FromRow)]
+#[derive(Serialize, FromRow)]
 struct RUNEPoolHistoryMeta {
     start_time: String,
     end_time: String,
@@ -32,7 +35,7 @@ struct RUNEPoolHistoryMeta {
     next_page: Option<String>,
 }
 
-#[derive(Serialize,FromRow,Debug)]
+#[derive(Serialize, FromRow, Debug)]
 
 struct RUNEPoolHistoryInterval {
     start_time: String,
@@ -41,7 +44,7 @@ struct RUNEPoolHistoryInterval {
     units: String,
 }
 
-#[derive(FromRow,Debug)]
+#[derive(FromRow, Debug)]
 struct RUNEPoolHistoryIntervalGroup {
     record_date: String,
     // record_date: NaiveDate,
@@ -59,10 +62,6 @@ struct RUNEPoolHistoryResponse {
     meta: RUNEPoolHistoryMeta,
 }
 
-
-
-
-
 #[get("/history/runepool")]
 async fn get_runepool_history(
     pool: Data<MySqlPool>,
@@ -75,7 +74,7 @@ async fn get_runepool_history(
         return HttpResponse::BadRequest().body("Count must be between 1 and 400");
     }
 
-    let to = query.to.unwrap_or_else(|| chrono::Utc::now().timestamp());  // Default to current time
+    let to = query.to.unwrap_or_else(|| chrono::Utc::now().timestamp()); // Default to current time
     let from = query.from.unwrap_or_else(|| {
         // Calculate from based on the interval and count if not provided
         match interval.as_str() {
@@ -85,11 +84,13 @@ async fn get_runepool_history(
             "month" => to - Duration::days(30 * count).num_seconds(),
             "quarter" => to - Duration::days(90 * count).num_seconds(),
             "year" => to - Duration::days(365 * count).num_seconds(),
-            a => if a.len() ==0 {
-                to - Duration::days(count).num_seconds()
-            }else{
-                -1
-            },  // Handle invalid interval
+            a => {
+                if a.len() == 0 {
+                    to - Duration::days(count).num_seconds()
+                } else {
+                    -1
+                }
+            } // Handle invalid interval
         }
     });
     if from == -1 {
@@ -100,7 +101,8 @@ async fn get_runepool_history(
 
     match result {
         Ok(response) => HttpResponse::Ok().json(response),
-         Err(e) => HttpResponse::InternalServerError().json(serde_json::json!({ "error": format!("Error: {:?}", e) })),
+        Err(e) => HttpResponse::InternalServerError()
+            .json(serde_json::json!({ "error": format!("Error: {:?}", e) })),
     }
 }
 async fn fetch_data_for_intervals(
@@ -110,19 +112,19 @@ async fn fetch_data_for_intervals(
     interval: &str,
     count: i64,
 ) -> Result<RUNEPoolHistoryResponse, sqlx::Error> {
-
     // Create the correct SQL PARTITION BY clause based on the interval
     let partition_by_clause = match interval {
-        "hour" => "DATE_FORMAT(start_time, '%Y-%m-%d %H')",   // Group by year, month, day, and hour
-        "day" => "DATE(start_time)",                          // Group by day
-        "week" => "YEARWEEK(start_time)",                     // Group by year and week
-        "month" => "DATE_FORMAT(start_time, '%Y-%m')",        // Group by year and month
-        "year" => "YEAR(start_time)",                         // Group by year
-        _ => "DATE(start_time)",                              // Default to day
+        "hour" => "DATE_FORMAT(start_time, '%Y-%m-%d %H')", // Group by year, month, day, and hour
+        "day" => "DATE(start_time)",                        // Group by day
+        "week" => "YEARWEEK(start_time)",                   // Group by year and week
+        "month" => "DATE_FORMAT(start_time, '%Y-%m')",      // Group by year and month
+        "year" => "YEAR(start_time)",                       // Group by year
+        _ => "DATE(start_time)",                            // Default to day
     };
 
     // SQL query with the dynamic partition_by_clause
-    let query_str = format!(r#"
+    let query_str = format!(
+        r#"
     WITH RankedRecords AS (
         SELECT 
             start_time,
@@ -149,27 +151,31 @@ async fn fetch_data_for_intervals(
     GROUP BY record_date
     ORDER BY record_date
     LIMIT ?;
-    "#, partition_by_clause, partition_by_clause, partition_by_clause);
+    "#,
+        partition_by_clause, partition_by_clause, partition_by_clause
+    );
 
     let mut intervals = Vec::<RUNEPoolHistoryInterval>::new();
 
     // Execute the query using `sqlx`
-    let records: Vec<RUNEPoolHistoryIntervalGroup> = match sqlx::query_as::<_, RUNEPoolHistoryIntervalGroup>(&query_str)
-        .bind(from)
-        .bind(to)
-        .bind(count)
-        .fetch_all(pool)
-        .await {
+    let records: Vec<RUNEPoolHistoryIntervalGroup> =
+        match sqlx::query_as::<_, RUNEPoolHistoryIntervalGroup>(&query_str)
+            .bind(from)
+            .bind(to)
+            .bind(count)
+            .fetch_all(pool)
+            .await
+        {
             Ok(records) => records,
             Err(e) => {
                 eprintln!("Error: {:?}", e);
                 return Err(e);
             }
         };
-        if records.is_empty() {
-            eprintln!("No records found for the given parameters.");
-            return Err(sqlx::Error::RowNotFound); // Return RowNotFound if no records
-        }
+    if records.is_empty() {
+        eprintln!("No records found for the given parameters.");
+        return Err(sqlx::Error::RowNotFound); // Return RowNotFound if no records
+    }
 
     // Populate the response intervals
     for record in records.iter() {
@@ -185,12 +191,17 @@ async fn fetch_data_for_intervals(
     // Build the metadata
     let metadata = RUNEPoolHistoryMeta {
         start_time: records[0].first_record.to_string(),
-        end_time: endtime.clone(),  // Clone to avoid borrowing issues
+        end_time: endtime.clone(), // Clone to avoid borrowing issues
         start_units: records[0].first_units.to_string(),
         start_count: records[0].first_count.to_string(),
         end_units: records[records.len() - 1].last_units.to_string(),
         end_count: records[records.len() - 1].last_count.to_string(),
-        next_page: Some(endtime.parse::<DateTime<Utc>>().map(|dt| dt.timestamp().to_string()).unwrap_or_else(|_| "Invalid timestamp".to_string())),
+        next_page: Some(
+            endtime
+                .parse::<DateTime<Utc>>()
+                .map(|dt| dt.timestamp().to_string())
+                .unwrap_or_else(|_| "Invalid timestamp".to_string()),
+        ),
     };
 
     // Build the final response
