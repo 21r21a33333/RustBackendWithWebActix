@@ -81,7 +81,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_swaps_history)
             .service(get_earnings)
     })
-    .bind(("127.0.0.1", 3000))?
+    .bind(("0.0.0.0", 3000))?
     .run();
     println!("Server running at http://localhost:3000");
     server.await
