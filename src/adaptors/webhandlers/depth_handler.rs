@@ -170,7 +170,7 @@ async fn fetch_data_for_intervals(
                 {} AS record_date,
                 ROW_NUMBER() OVER (PARTITION BY {} ORDER BY start_time) AS rn_first,
                 ROW_NUMBER() OVER (PARTITION BY {} ORDER BY start_time DESC) AS rn_last
-                FROM Btcdepth
+                FROM btcdepth
                 WHERE start_time IS NOT NULL and start_time >= FROM_UNIXTIME(?) AND start_time <=FROM_UNIXTIME(?)
         )
         SELECT

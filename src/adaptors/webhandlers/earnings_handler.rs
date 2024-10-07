@@ -179,7 +179,7 @@ async fn fetch_data_for_intervals(
         FROM 
             earninginterval e
         LEFT JOIN 
-            earningsPools ep ON e.id = ep.earnings_id
+            earningspools ep ON e.id = ep.earnings_id
     )
     SELECT 
         CAST(fd.record_date AS CHAR) AS record_date,
@@ -200,7 +200,7 @@ async fn fetch_data_for_intervals(
     FROM 
         earninginterval e
     LEFT JOIN 
-        earningsPools ep ON e.id = ep.earnings_id
+        earningspools ep ON e.id = ep.earnings_id
     INNER JOIN 
         first_records fd ON {partition_by_clause} = fd.record_date  -- Join with the first N distinct records
     LEFT JOIN 

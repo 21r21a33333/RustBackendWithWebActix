@@ -16,7 +16,7 @@ pub fn getswapquery(partition_by_clause: &str) -> String {
                         sum(synth_redeem_fees) OVER (PARTITION BY {} ORDER BY start_time DESC) AS synth_redeem_fees_sum,
                         sum(synth_redeem_volume) OVER (PARTITION BY {} ORDER BY start_time DESC) AS synth_redeem_volume_sum
 
-                    FROM Swaps
+                    FROM swaps
                     WHERE start_time IS NOT NULL 
                     AND start_time >= FROM_UNIXTIME(?) 
                     AND start_time <= FROM_UNIXTIME(?)

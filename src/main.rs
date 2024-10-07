@@ -72,9 +72,9 @@ async fn main() -> std::io::Result<()> {
         actix_web::rt::spawn(run_cron_job());
     
 
-    let PORT = env::var("PORT").expect("Environment variable not found");
-    let PORT: u16 = PORT.parse().expect("Invalid port number");
-    // Start the Actix web server
+    // let PORT = env::var("PORT").expect("Environment variable not found");
+    // let PORT: u16 = PORT.parse().expect("Invalid port number");
+    // // Start the Actix web server
     let server=HttpServer::new(move || {
         App::new()
             .app_data(Data::new(database.clone()))
@@ -84,7 +84,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_swaps_history)
             .service(get_earnings)
     })
-    .bind(("0.0.0.0", PORT))?
+    .bind(("0.0.0.0", 3000))?
     .run();
     println!("Server running at http://localhost:3000");
     server.await
